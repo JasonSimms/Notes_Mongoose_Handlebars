@@ -25,13 +25,23 @@ app.get("/", (req, res, next) => {
 });
 
 
-app.get("/movie", (req, res) => {
-  console.log("QUERY", req.query)
-  const { year} = req.query
-  Movie.find({year})
-  .then(x => res.send(x))
-});
+app.get('/movie', (req, res) => {
+  const {
+      title, rate, year,
+  } = req.query
 
+  const query = {
+      $and: [
+      title ? { title : {$regex: new RegExp('^'+title+ '.*','i')} } : {},
+          rate ? { rate } : {},
+          year ? { year } : {},
+      ],
+  }
+
+  console.log(query['$and'])
+
+  Movie.find(query).then(movies => res.send(movies))
+})
 // app.get("/cat", (req, res) => {
 //   console.log("QUERY", req.query)
 //   const { age,name} = req.query
